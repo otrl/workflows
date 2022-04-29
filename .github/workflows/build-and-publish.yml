@@ -1,5 +1,17 @@
 name: build scala containers and publish them to docker cloud
 
+permissions:
+  actions: read
+  checks: read
+  contents: read
+  deployments: read
+  id-token: read
+  packages: read
+  pull-requests: read
+  repository-projects: read
+  security-events: read
+  statuses: read
+
 on: 
     workflow_call:
         inputs:
