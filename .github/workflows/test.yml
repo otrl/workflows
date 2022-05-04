@@ -1,0 +1,30 @@
+name: test
+
+permissions:
+  actions: read
+  checks: read
+  contents: read
+  deployments: read
+  id-token: read
+  packages: read
+  pull-requests: read
+  repository-projects: read
+  security-events: read
+  statuses: read
+
+on: 
+    workflow_call:
+        inputs:
+            scala_version:
+                required: true
+                type: string
+        secrets:
+            ARTIFACTORY_USER:
+                required: true
+  
+jobs:
+  doing-stuff:
+     steps:
+      - uses: actions/checkout@v3
+      - name: build and test
+        run: echo "i did stuff"
