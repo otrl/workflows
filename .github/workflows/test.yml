@@ -12,19 +12,20 @@ permissions:
   security-events: read
   statuses: read
 
-on: 
-    workflow_call:
-        inputs:
-            scala_version:
-                required: true
-                type: string
-        secrets:
-            ARTIFACTORY_USER:
-                required: true
+on:
+  pull_request:
+    branches:
+      - master
+      - /^[0-9]+\.[0-9]+\.[0-9]+(\-[0-9]+)?$/
+      - /^feature\/.+$/
+  push:
+    tags:
+      - '*'
   
 jobs:
   doing-stuff:
-     steps:
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v3
       - name: build and test
         run: echo "i did stuff"
