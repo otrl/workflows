@@ -21,6 +21,7 @@ on:
   push:
     tags:
       - '*'
+  workflow_call:
   
 jobs:
   doing-stuff:
