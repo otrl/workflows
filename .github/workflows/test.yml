@@ -1,27 +1,18 @@
 name: test
 
-permissions:
-  actions: read
-  checks: read
-  contents: read
-  deployments: read
-  id-token: read
-  packages: read
-  pull-requests: read
-  repository-projects: read
-  security-events: read
-  statuses: read
-
 on:
-  pull_request:
-    branches:
-      - master
-      - /^[0-9]+\.[0-9]+\.[0-9]+(\-[0-9]+)?$/
-      - /^feature\/.+$/
-  push:
-    tags:
-      - '*'
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      name:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Person to greet'
+        # Default value if no value is explicitly provided
+        default: 'World'
+        # Input has to be provided for the workflow to run
+        required: true
   workflow_call:
+  
   
 jobs:
   doing-stuff:
