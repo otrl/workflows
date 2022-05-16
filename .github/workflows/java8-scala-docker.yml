@@ -1,4 +1,4 @@
-name: build scala containers and publish them to docker cloud
+name: build scala pull request containers and publish them to docker cloud
 
 on: 
   workflow_call:
@@ -51,10 +51,3 @@ jobs:
           docker tag ${{ inputs.repo_name }} ${{ inputs.repo_name }}:${PULL_TAG} 
           docker push ${{ inputs.repo_name }}:${PULL_TAG}
           
-      - name: Docker Push Tag to docker cloud
-        if: ${{ github.ref_type == 'tag' }}
-        run: |
-          set -e
-          for tag in ${{ github.ref_name }} latest; do
-            docker tag ${{ inputs.repo_name }} ${{ inputs.repo_name }}:${{ github.ref_name }} && docker push ${{ inputs.repo_name }}:${{ github.ref_name }}
-          done
