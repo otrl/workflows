@@ -21,14 +21,27 @@ on:
         
   
 jobs:
-  build:
-    # The type of runner that the job will run on
+  create-tag-and-release:
     runs-on: ubuntu-20.04
-
+    env: 
+      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true      
     steps:
-      - name: checkout repo
-        uses: actions/checkout@v3
-      
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+      - name: Bump version and push tag
+        uses: otrl/github-tag-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}
+          DEFAULT_BUMP: patch
+          VERBOSE: true
+          
+      - name: Create release
+        uses: otrl/github-release-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}
+
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
         with:
@@ -44,9 +57,10 @@ jobs:
       - name: build and test the image
         run: sbt ++${{ inputs.scala_version }} clean coverage test coverageOff docker:publishLocal
         
-      - name: Docker Push tag to docker cloud
+      - name: Docker Push PR to docker cloud
         run: |
           set -e
-          PULL_TAG="pull-${{ github.event.number }}"          
-          docker tag ${{ inputs.repo_name }} ${{ inputs.repo_name }}:${PULL_TAG} 
-          docker push ${{ inputs.repo_name }}:${PULL_TAG}
+          for tag in ${{ github.ref_name }} latest; do
+            docker tag ${{ inputs.repo_name }} ${{ inputs.repo_name }}:${{ github.ref_name }} && docker push ${{ inputs.repo_name }}:${{ github.ref_name }}
+          done
+          
