@@ -18,7 +18,12 @@ on:
         required: true
       docker_password:
         required: true
-        
+      aws_access_key_id:
+        required: true
+      aws_secret_access_key:
+        required: true
+      ecr_repo:
+        required: true
   
 jobs:
   create-tag-and-release:
