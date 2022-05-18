@@ -66,8 +66,10 @@ jobs:
         run: |
           set -e
           for tag in ${{ github.ref_name }} latest; do
-            docker tag ${{ inputs.repo_name }} ${{ inputs.repo_name }}:${{ github.ref_name }}
-            docker push ${{ inputs.repo_name }}:${{ github.ref_name }}
+            if [ ${{ github.ref_name }} != "master" ]; then
+              docker tag ${{ inputs.repo_name }} ${{ inputs.repo_name }}:${{ github.ref_name }}
+              docker push ${{ inputs.repo_name }}:${{ github.ref_name }}
+            fi
           done
           
       - name: Configure AWS credentials
