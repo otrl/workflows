@@ -76,7 +76,7 @@ jobs:
         run: |
           set -e
           echo "Pushing image to ECR..."
-          docker tag ${{ inputs.repo_name }} ${{ secrets.ecr_repo }}${{ inputs.repo_name }}::${{ $GIT_TAG }}
+          docker tag ${{ inputs.repo_name }} ${{ secrets.ecr_repo }}${{ inputs.repo_name }}::${{ env.GIT_TAG }}
           docker push ${{ secrets.ecr_repo }}${{ inputs.repo_name }}::${{ $GIT_TAG }}
           done
           
