@@ -47,9 +47,12 @@ jobs:
           password: ${{ secrets.docker_password }}    
           
       - name: build and test the image
-        run:
+        run: |
           set -e
           sbt ++${{ inputs.scala_version }} clean coverage test coverageOff docker:publishLocal
+
+      - name: list images 
+        run: docker image ls
         
       - name: Docker Push PR to docker cloud
         if: ${{ github.event_name == 'pull_request' }}
