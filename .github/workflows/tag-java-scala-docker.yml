@@ -88,6 +88,6 @@ jobs:
       - name: Docker Push tag to docker cloud
         run: |
           set -e
-          docker tag ${{ secrets.ecr_repo }}${{ inputs.repo_name }}::${{ env.GIT_TAG }} ${{ inputs.repo_name }}:$GIT_TAG
+          docker tag ${{ secrets.ecr_repo }}${{ inputs.repo_name }}:${{ env.GIT_TAG }} ${{ inputs.repo_name }}:$GIT_TAG
           docker push ${{ inputs.repo_name }}:$GIT_TAG
 
