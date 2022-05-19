@@ -17,13 +17,19 @@ on:
         required: true
       docker_password:
         required: true
+      artifactory_user:
+        required: false
+      artifactory_pass:
+        required: false
         
   
 jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
-
+    env:
+      ARTIFACTORY_USER: ${{ secrets.artifactory_user }}
+      ARTIFACTORY_PASS: ${{ secrets.artifactory_pass }}
     steps:
       - name: checkout repo
         uses: actions/checkout@v3
@@ -41,7 +47,9 @@ jobs:
           password: ${{ secrets.docker_password }}    
           
       - name: build and test the image
-        run: sbt ++${{ inputs.scala_version }} clean coverage test coverageOff docker:publishLocal
+        run:
+          set -e
+          sbt ++${{ inputs.scala_version }} clean coverage test coverageOff docker:publishLocal
         
       - name: Docker Push PR to docker cloud
         if: ${{ github.event_name == 'pull_request' }}
