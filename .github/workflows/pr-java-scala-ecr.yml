@@ -21,6 +21,10 @@ on:
         required: true
       ecr_repo:
         required: true
+      artifactory_user:
+        required: false
+      artifactory_pass:
+        required: false
   
 jobs:
   build:
