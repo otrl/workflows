@@ -24,13 +24,20 @@ on:
         required: true
       ecr_repo:
         required: true
+      artifactory_user:
+        required: false
+      artifactory_pass:
+        required: false
   
 jobs:
   create-tag-and-release:
     runs-on: ubuntu-20.04
     env: 
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
-      ACTIONS_ALLOW_UNSECURE_COMMANDS: true      
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      ARTIFACTORY_USER: ${{ secrets.artifactory_user }}
+      ARTIFACTORY_PASS: ${{ secrets.artifactory_pass }}
+      
     steps:
       - uses: actions/checkout@v3
         with:
@@ -54,7 +61,9 @@ jobs:
           cache: 'sbt'
 
       - name: build and test the image
-        run: sbt ++${{ inputs.scala_version }} clean coverage test coverageOff docker:publishLocal
+        run: |
+          set -e
+          sbt ++${{ inputs.scala_version }} clean coverage test coverageOff docker:publishLocal
         
       - name: set docker tag
         run: echo "GIT_TAG=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
