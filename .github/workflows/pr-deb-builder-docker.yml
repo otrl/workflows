@@ -48,8 +48,14 @@ jobs:
           
       - name: set package version 
         run: |
+          set -e
           echo "DEBVERSION=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
           sed -i 's/LATEST/$DEBVERSiON/g' build.sbt
+  
+      - name: cat sbt build file
+        run: |
+          set -e
+          cat build.sbt
         
       - name: build and test the deb file
         run: |
