@@ -55,7 +55,7 @@ jobs:
           #[  -z "$DEBVERSION" ] && DEBVERSION="1.0" >> $GITHUB_ENV
       
       - name : find the build file
-        run: find / -name build.sbt
+        run: ls 
           #sed -i "s/LATEST/$DEBVERSION/g" /home/runner/work/fulfilment/fulfilment/build.sbt
   
       - name: cat sbt build file
