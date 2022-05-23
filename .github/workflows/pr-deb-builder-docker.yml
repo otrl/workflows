@@ -46,15 +46,22 @@ jobs:
           username: ${{ secrets.docker_username }}
           password: ${{ secrets.docker_password }}    
           
-      - name: build and test the image
+      - name: build and test the deb file
         run: |
           set -e
-          sbt ++${{ inputs.scala_version }} clean coverage test coverageOff docker:publishLocal
+          sbt sbt ++$TRAVIS_SCALA_VERSION test warn debian:packageBin
+          version=$(find target/fulfilment*.deb | grep -oP 'fulfilment_\K(.*)(?=_all.deb)') >> $GITHUB_ENV
+          echo "Built version $version"
+          
+      - name: build the docker file
+        run: |
+          set -e
+          docker build --build-arg version=${version} -t fulfilment .
+          
       - name: list images 
         run: docker image ls
         
       - name: Docker Push PR to docker cloud
-        if: ${{ github.event_name == 'pull_request' }}
         run: |
           set -e
           PULL_TAG="pull-${{ github.event.number }}"          
