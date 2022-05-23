@@ -49,7 +49,7 @@ jobs:
       - name: build and test the deb file
         run: |
           set -e
-          sbt ++$TRAVIS_SCALA_VERSION test warn debian:packageBin
+          sbt ++${{ inputs.scala_version }} test warn debian:packageBin
           version=$(find target/fulfilment*.deb | grep -oP 'fulfilment_\K(.*)(?=_all.deb)') >> $GITHUB_ENV
           echo "Built version $version"
           
