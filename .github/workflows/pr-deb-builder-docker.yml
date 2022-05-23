@@ -56,12 +56,18 @@ jobs:
       
       - name : find the build file
         run: find / -name build.sbt
-          #sed -i "s/LATEST/$DEBVERSION/g" build.sbt
+          #sed -i "s/LATEST/$DEBVERSION/g" /home/runner/work/fulfilment/fulfilment/build.sbt
   
       - name: cat sbt build file
         run: |
           set -e
           cat build.sbt
+        
+      - name: edit the build file 
+        run: sed -i "s/LATEST/$DEBVERSION/g" /home/runner/work/fulfilment/fulfilment/build.sbt
+        
+      - name: read the file again 
+        run: cat /home/runner/work/fulfilment/fulfilment/build.sbt
         
       - name: build and test the deb file
         run: |
