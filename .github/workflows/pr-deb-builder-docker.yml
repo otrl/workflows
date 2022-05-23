@@ -80,7 +80,7 @@ jobs:
       - name: build the docker file
         run: |
           set -e
-          docker build --build-arg version=$DEBVERSION -t fulfilment .
+          docker build --build-arg version=$DEBVERSION -t otrl/fulfilment .
           
       - name: list images 
         run: docker image ls
