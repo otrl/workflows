@@ -74,11 +74,6 @@ jobs:
           sbt ++${{ inputs.scala_version }} test warn debian:packageBin
           echo "Revised Package Version $DEBVERSION"
           
-      - name: build the docker file
-        run: |
-          set -e
-          docker build --build-arg version=$DEBVERSION -t otrl/fulfilment .
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -89,9 +84,23 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+
       - name: list images 
         run: docker image ls
-        
+
+      - name: modify the docker file to use the ecr repo for the base image
+        run: |
+          set -e
+          sed -i "s/otrl/${{ secrets.ecr_repo }}\/otrl/g" ./Dockerfile
+      
+      - name: verify updated Dockerfile
+        run: cat Dockerfile
+          
+      - name: build the docker file
+        run: |
+          set -e
+          docker build --build-arg version=$DEBVERSION -t otrl/fulfilment .
+      
       - name: Push PR to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
