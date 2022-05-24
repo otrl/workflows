@@ -91,7 +91,7 @@ jobs:
       - name: modify the docker file to use the ecr repo for the base image
         run: |
           set -e
-          sed -i "s/otrl/${{ secrets.ecr_repo }}\/otrl/g" ./Dockerfile
+          sed -i "s,otrl,${{ secrets.ecr_repo }}/otrl,g" ./Dockerfile
       
       - name: verify updated Dockerfile
         run: cat Dockerfile
