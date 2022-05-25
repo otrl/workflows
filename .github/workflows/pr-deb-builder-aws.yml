@@ -91,7 +91,7 @@ jobs:
       - name: modify the docker file to use the ecr repo for the base image
         run: |
           set -e
-          sed -i "s,otrl,834579172960.dkr.ecr.eu-west-2.amazonaws.com/otrl,g" ./Dockerfile
+          sed -i "s,otrl/oraclejdk,834579172960.dkr.ecr.eu-west-2.amazonaws.com/otrl/oraclejdk,g" ./Dockerfile
       
       - name: verify updated Dockerfile
         run: cat Dockerfile
