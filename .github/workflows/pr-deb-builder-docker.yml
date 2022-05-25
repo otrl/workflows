@@ -81,7 +81,7 @@ jobs:
       - name: build the docker file
         run: |
           set -e
-          docker build --build-arg version=$DEBVERSION -t otrl/fulfilment .
+          docker build --build-arg version=$DEBVERSION -t ${{ inputs.repo_name }} .
           
       - name: list images 
         run: docker image ls
