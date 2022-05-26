@@ -81,7 +81,7 @@ jobs:
       - name: add the base image to the dockerfile 
         run: |
           set -e
-          sed -i "1s;^;FROM ${{ inputs.repo_name }}:jan2022v3;g" ./Dockerfile
+          sed -i "1s;^;FROM otrl/oraclejdk-8-base:jan2022v3;g" ./Dockerfile
 
       - name: build the docker file
         run: |
