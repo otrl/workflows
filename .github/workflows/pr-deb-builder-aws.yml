@@ -91,7 +91,8 @@ jobs:
       - name: add the base image to the dockerfile 
         run: |
           set -e
-          sed -i "1s;^;FROM ${{ secrets.ecr_repo }}${{ inputs.repo_name }}:jan2022v3;g" ./Dockerfile
+          sed -i "1s;^;FROM 834579172960.dkr.ecr.eu-west-2.amazonaws.com/otrl/oraclejdk-8-base:jan2022v3
+;g" ./Dockerfile
 
       - name: verify updated Dockerfile
         run: cat Dockerfile
