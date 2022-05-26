@@ -1,0 +1,128 @@
+name: build scala deb packages tag containers and publish them
+
+on: 
+  workflow_call:
+    inputs:
+      java_version:
+        required: true
+        type: string
+      scala_version:
+        required: true
+        type: string
+      repo_name:
+        required: true
+        type: string 
+      service_name:
+        required: true
+        type: string        
+    secrets:
+      docker_username:
+        required: true
+      docker_password:
+        required: true
+      aws_access_key_id:
+        required: true
+      aws_secret_access_key:
+        required: true
+      ecr_repo:
+        required: true
+      artifactory_user:
+        required: false
+      artifactory_pass:
+        required: false
+  
+jobs:
+  create-tag-and-release:
+    runs-on: ubuntu-20.04
+    env: 
+      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      ARTIFACTORY_USER: ${{ secrets.artifactory_user }}
+      ARTIFACTORY_PASS: ${{ secrets.artifactory_pass }}
+      
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+      - name: Bump version and push tag
+        uses: otrl/github-tag-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}
+          DEFAULT_BUMP: patch
+          VERBOSE: true
+          
+      - name: Create release
+        uses: otrl/github-release-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ inputs.java_version }}
+          cache: 'sbt'
+
+      - name: set docker tag
+        run: echo "GIT_TAG=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
+    
+      - name: set package version 
+        run: |
+          set -e
+          echo "DEBVERSION=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
+
+      - name: edit the build file 
+        run: sed -i "s/LATEST/$DEBVERSION/g" /home/runner/work/${{ inputs.service_name }}/${{ inputs.service_name }}/build.sbt
+
+      - name: read the file again 
+        run: cat /home/runner/work/${{ inputs.service_name }}/${{ inputs.service_name }}/build.sbt
+              
+      - name: build and test the deb file
+        run: |
+          set -e
+          sbt ++${{ inputs.scala_version }} test warn debian:packageBin
+          echo "Revised Package Version $DEBVERSION"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.aws_access_key_id }}
+          aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
+          aws-region: eu-west-2
+          
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: add the base image to the dockerfile 
+        run: |
+          set -e
+          sed -i "1s;^;FROM ${{ secrets.ecr_repo }}${{ inputs.repo_name }}:jan2022v3;g" ./Dockerfile
+
+      - name: verify updated Dockerfile
+        run: cat Dockerfile
+
+      - name: build the docker image
+        run: |
+          set -e
+          docker build --build-arg version=$DEBVERSION -t ${{ inputs.repo_name }} .
+                  
+      - name: tag and push to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          set -e
+          echo "Pushing image to ECR..."
+          docker tag ${{ inputs.repo_name }} ${{ secrets.ecr_repo }}${{ inputs.repo_name }}:$GIT_TAG
+          docker push ${{ secrets.ecr_repo }}${{ inputs.repo_name }}:$GIT_TAG
+          
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.docker_username }}
+          password: ${{ secrets.docker_password }}    
+                 
+      - name: Docker Push tag to docker cloud
+        run: |
+          set -e
+          docker tag ${{ secrets.ecr_repo }}${{ inputs.repo_name }}:${{ env.GIT_TAG }} ${{ inputs.repo_name }}:$GIT_TAG
+          docker push ${{ inputs.repo_name }}:$GIT_TAG
