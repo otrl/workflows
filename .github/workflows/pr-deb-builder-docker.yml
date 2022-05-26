@@ -77,7 +77,12 @@ jobs:
           set -e
           sbt ++${{ inputs.scala_version }} test warn debian:packageBin
           echo "Revised Package Version $DEBVERSION"
-          
+
+      - name: add the base image to the dockerfile 
+        run: |
+          set -e
+          sed -i "1s;^;FROM ${{ inputs.repo_name }}:jan2022v3;g" ./Dockerfile
+
       - name: build the docker file
         run: |
           set -e
