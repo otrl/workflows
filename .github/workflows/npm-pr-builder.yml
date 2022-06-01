@@ -21,21 +21,16 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
     
-    #configures the version of node js to install on the job runner
-    strategy:
-      matrix:
-        node-version: [ ${{ inputs.node_version }} ]
-        
     steps:
       - name: checkout repo
         uses: actions/checkout@v3
         with:
           fetch-depth: '0'
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ inputs.node_version }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ inputs.node_version }}
 
       - name: Cache node modules
         id: cache-npm
