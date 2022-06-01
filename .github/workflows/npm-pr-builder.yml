@@ -9,9 +9,12 @@ on:
       cache_directory:
         required: true
         type: string
-      commands:
+      command1:
         required: true
         type: string
+      command2:
+        required: false
+        type: string        
     secrets:
       ssh_private_key:
         required: false
@@ -50,5 +53,9 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.ssh_private_key }}          
 
-      - name: run npm commands
-        run: ${{ inputs.commands }}
+      - name: run npm command 1
+        run: ${{ inputs.command1 }}
+
+      - name: run npm command 2
+        if: len(${{ inputs.command2 }})
+        run: ${{ inputs.command2 }}
