@@ -24,7 +24,7 @@ jobs:
     #configures the version of node js to install on the job runner
     strategy:
       matrix:
-        node-version: [ ${{ secrets.ssh_private_key }} ]
+        node-version: [ ${{ inputs.node_version }} ]
         
     steps:
       - name: checkout repo
