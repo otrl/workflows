@@ -84,4 +84,4 @@ jobs:
       - name: build the docker file
         run: |
           set -e
-          docker build -t ${{ inputs.repo_name }} ./docker
+          docker build -t ${{ inputs.repo_name }} .
