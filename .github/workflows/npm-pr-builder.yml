@@ -27,6 +27,11 @@ on:
         required: true
       ecr_repo:
         required: true        
+      docker_password:
+        required: true
+      docker_username:
+        required: true
+      
 
 jobs:
   build:
