@@ -1,7 +1,7 @@
 
 name: build scala tag containers and publish them to docker cloud
 
-on: 
+on:
   workflow_call:
     inputs:
       java_version:
@@ -12,7 +12,7 @@ on:
         type: string
       repo_name:
         required: true
-        type: string 
+        type: string
     secrets:
       docker_username:
         required: true
@@ -28,16 +28,16 @@ on:
         required: false
       artifactory_pass:
         required: false
-  
+
 jobs:
   create-tag-and-release:
     runs-on: ubuntu-20.04
-    env: 
+    env:
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       ARTIFACTORY_USER: ${{ secrets.artifactory_user }}
       ARTIFACTORY_PASS: ${{ secrets.artifactory_pass }}
-      
+
     steps:
       - uses: actions/checkout@v3
         with:
@@ -48,15 +48,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.github_token }}
           DEFAULT_BUMP: patch
           VERBOSE: true
-          
+
       - name: Create release
         uses: otrl/github-release-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
 
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+      - name: Set up JDK
+        uses: actions/setup-java@v3
         with:
+          distribution: 'temurin'
           java-version: ${{ inputs.java_version }}
           cache: 'sbt'
 
@@ -64,21 +65,21 @@ jobs:
         run: |
           set -e
           sbt ++${{ inputs.scala_version }} clean coverage test coverageOff docker:publishLocal
-        
+
       - name: set docker tag
         run: echo "GIT_TAG=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
-             
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.aws_access_key_id }}
           aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
           aws-region: eu-west-2
-          
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-        
+
       - name: tag and push to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -87,13 +88,13 @@ jobs:
           echo "Pushing image to ECR..."
           docker tag ${{ inputs.repo_name }} ${{ secrets.ecr_repo }}${{ inputs.repo_name }}:$GIT_TAG
           docker push ${{ secrets.ecr_repo }}${{ inputs.repo_name }}:$GIT_TAG
-          
+
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.docker_username }}
-          password: ${{ secrets.docker_password }}    
-                 
+          password: ${{ secrets.docker_password }}
+
       - name: Docker Push tag to docker cloud
         run: |
           set -e
