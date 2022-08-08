@@ -28,7 +28,7 @@ jobs:
           
       - uses: actions/download-artifact@v3.0.0
         with:
-          name: my-artifact
+          name: $VERSION.tar.gz
           path: path/to/artifact
     
       - run: ls path/to/artifact/
