@@ -32,3 +32,13 @@ jobs:
           path: path/to/artifact
     
       - run: ls path/to/artifact/
+      
+      - run: echo "VERSION=`jq '.version' package.json`" >> $GITHUB_ENV
+      
+      - run: |
+          set -e 
+          echo $VERSION
+          
+      - run: |
+          set -e
+          tar -xzvf path/to/artifact/$VERSION.tar.gz
