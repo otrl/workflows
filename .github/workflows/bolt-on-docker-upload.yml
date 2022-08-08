@@ -3,12 +3,6 @@ name: run docker image build on artifact
 on: 
   workflow_call:
     inputs:
-      java_version:
-        required: true
-        type: string
-      scala_version:
-        required: true
-        type: string
       repo_name:
         required: true
         type: string 
