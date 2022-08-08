@@ -33,7 +33,7 @@ jobs:
     
       - run: ls path/to/artifact/
       
-      - run: echo "VERSION=`jq '.version' package.json`" >> $GITHUB_ENV
+      - run: echo "VERSION=`jq -r '.version' package.json`" >> $GITHUB_ENV
       
       - run: |
           set -e 
