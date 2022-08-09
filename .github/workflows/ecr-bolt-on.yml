@@ -7,9 +7,11 @@ on:
         required: true
         type: string
     secrets:
-      ecr_username:
+      aws_access_key_id:
         required: true
-      ecr_password:
+      aws-secret-access-key:
+        required: true
+      ecr_repo:
         required: true
         
 env:
