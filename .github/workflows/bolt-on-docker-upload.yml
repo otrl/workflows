@@ -9,6 +9,9 @@ on:
       service_name:
         required: true
         type: string
+      build_image:
+        required: true
+        type: string
     secrets:
       docker_username:
         required: true
@@ -26,19 +29,46 @@ jobs:
         with:
           fetch-depth: '0'
           
-      - uses: actions/download-artifact@v3.0.0
+      - name: get artifacts frome previous job
+        uses: actions/download-artifact@v3.0.0
         with:
           name: $VERSION.tar.gz
           path: path/to/artifact
     
-      - run: ls path/to/artifact/
+      - name: cheact artifacts available
+        run: ls path/to/artifact/
       
-      - run: echo "VERSION=`jq -r '.version' package.json`" >> $GITHUB_ENV
+      - name: set environmentals
+        run: |
+          echo "VERSION=`jq -r '.version' package.json`" >> $GITHUB_ENV
+          echo "PULL_TAG=pull-${{ github.event.number }}" >> $GITHUB_ENV
       
-      - run: |
+      - name: check version is set correctly
+        run: |
           set -e 
           echo $VERSION
           
-      - run: |
+      - name: unpackage artifact from previous run
+        run: |
           set -e
           tar -xzvf path/to/artifact/$VERSION.tar.gz
+      
+      - name: build docker file
+        run: |
+          set -e
+          docker build --build-arg otrl_service_name=${{ inputs.build_image }} --build-arg version=${version} -t ${{ inputs.build_image }} .
+          
+      - name: tag docker file
+        run: |
+          set -e
+          docker tag ${{ inputs.build_image }} otrl/${{ inputs.build_image }}:$PULL_TAG
+          
+      - name: push docker image
+        run: |
+          set -e
+          docker push otrl/${{ inputs.build_image }}:$PULL_TAG
+          
+          
+          
+          
+          
