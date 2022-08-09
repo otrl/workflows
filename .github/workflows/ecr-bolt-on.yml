@@ -12,6 +12,8 @@ on:
       ecr_password:
         required: true
         
+env:
+  ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}        
   
 jobs:
   build:
@@ -47,12 +49,17 @@ jobs:
           set -e
           tar -xzvf path/to/artifact/$VERSION.tar.gz
       
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}       
+          aws-access-key-id: ${{ secrets.aws_access_key_id }}
+          aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
+          aws-region: eu-west-2
           
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+                  
       - name: build docker file
         run: |
           set -e
@@ -61,9 +68,9 @@ jobs:
       - name: tag docker file
         run: |
           set -e
-          docker tag ${{ inputs.build_image }} otrl/${{ inputs.build_image }}:$PULL_TAG
+          docker tag ${{ inputs.build_image }} ${{ secrets.ecr_repo }}otrl/${{ inputs.build_image }}:$PULL_TAG
           
-      - name: push docker image
+      - name: Push PR to Amazon ECR
         run: |
           set -e
-          docker push otrl/${{ inputs.build_image }}:$PULL_TAG
+          docker push ${{ secrets.ecr_repo }}otrl/${{ inputs.build_image }}:$PULL_TAG   
