@@ -58,8 +58,6 @@ jobs:
           aws-region: eu-west-2
           
       - name: Login to Amazon ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }} 
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
                   
@@ -74,6 +72,8 @@ jobs:
           docker tag ${{ inputs.build_image }} ${{ secrets.ecr_repo }}otrl/${{ inputs.build_image }}:$PULL_TAG
           
       - name: Push PR to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }} 
         run: |
           set -e
           docker push ${{ secrets.ecr_repo }}otrl/${{ inputs.build_image }}:$PULL_TAG   
