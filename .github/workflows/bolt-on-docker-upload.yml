@@ -3,6 +3,9 @@ name: run docker image build on artifact
 on: 
   workflow_call:
     inputs:
+      is_tag:
+        required: true
+        type: boolean
       build_image:
         required: true
         type: string
@@ -59,16 +62,28 @@ jobs:
           docker build --build-arg otrl_service_name=${{ inputs.build_image }} --build-arg version=${version} -t ${{ inputs.build_image }} .
           
       - name: tag docker file
+        if: ${{ inputs.is_tag == false }}
         run: |
           set -e
           docker tag ${{ inputs.build_image }} otrl/${{ inputs.build_image }}:$PULL_TAG
           
       - name: push docker image
+        if: ${{ inputs.is_tag == false }}
         run: |
           set -e
           docker push otrl/${{ inputs.build_image }}:$PULL_TAG
           
+      - name: tag docker file
+        if: ${{ inputs.is_tag == true }}
+        run: |
+          set -e
+          docker tag ${{ inputs.build_image }} otrl/${{ inputs.build_image }}:$VERSION
           
+      - name: push docker image
+        if: ${{ inputs.is_tag == true }}
+        run: |
+          set -e
+          docker push otrl/${{ inputs.build_image }}:$VERSION          
           
           
           
