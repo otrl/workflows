@@ -42,6 +42,9 @@ jobs:
         run: |
           echo "VERSION=`jq -r '.version' package.json`" >> $GITHUB_ENV
           echo "PULL_TAG=pull-${{ github.event.number }}" >> $GITHUB_ENV
+
+      - name: set docker tag
+        run: echo "GIT_TAG=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
           
       - name: check version is set correctly
         run: |
@@ -87,7 +90,7 @@ jobs:
         if: ${{ inputs.is_tag == true }}
         run: |
           set -e
-          docker tag ${{ inputs.build_image }} ${{ secrets.ecr_repo }}otrl/${{ inputs.build_image }}:$VERSION
+          docker tag ${{ inputs.build_image }} ${{ secrets.ecr_repo }}otrl/${{ inputs.build_image }}:$GIT_TAG
           
       - name: Push image to Amazon ECR
         if: ${{ inputs.is_tag == true }}
@@ -95,4 +98,4 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }} 
         run: |
           set -e
-          docker push ${{ secrets.ecr_repo }}otrl/${{ inputs.build_image }}:$VERSION          
+          docker push ${{ secrets.ecr_repo }}otrl/${{ inputs.build_image }}:$GIT_TAG          
