@@ -40,6 +40,9 @@ jobs:
           echo "VERSION=`jq -r '.version' package.json`" >> $GITHUB_ENV
           echo "PULL_TAG=pull-${{ github.event.number }}" >> $GITHUB_ENV
       
+      - name: set docker tag
+        run: echo "GIT_TAG=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
+        
       - name: check version is set correctly
         run: |
           set -e 
@@ -77,13 +80,13 @@ jobs:
         if: ${{ inputs.is_tag == true }}
         run: |
           set -e
-          docker tag ${{ inputs.build_image }} otrl/${{ inputs.build_image }}:$VERSION
+          docker tag ${{ inputs.build_image }} otrl/${{ inputs.build_image }}:$GIT_TAG
           
       - name: push docker image
         if: ${{ inputs.is_tag == true }}
         run: |
           set -e
-          docker push otrl/${{ inputs.build_image }}:$VERSION          
+          docker push otrl/${{ inputs.build_image }}:$GIT_TAG         
           
           
           
