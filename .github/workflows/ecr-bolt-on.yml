@@ -1,0 +1,108 @@
+name: run docker image build on artifact
+
+on: 
+  workflow_call:
+    inputs:
+      is_tag:
+        required: true
+        type: boolean
+      build_image:
+        required: true
+        type: string
+    secrets:
+      aws_access_key_id:
+        required: true
+      aws_secret_access_key:
+        required: true
+      ecr_repo:
+        required: true
+        
+       
+  
+jobs:
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-20.04
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+          
+      - name: get artifacts frome previous job
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: $VERSION.tar.gz
+          path: path/to/artifact
+    
+      - name: cheact artifacts available
+        run: ls path/to/artifact/
+      
+      - name: set environmentals
+        run: |
+          echo "VERSION=`jq -r '.version' package.json`" >> $GITHUB_ENV
+          echo "PULL_TAG=pull-${{ github.event.number }}" >> $GITHUB_ENV
+
+      - name: set docker tag
+        run: echo "GIT_TAG=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
+          
+      - name: check version is set correctly
+        run: |
+          set -e 
+          echo $VERSION
+          
+      - name: unpackage artifact from previous run
+        if: ${{ inputs.is_tag == false }}
+        run: |
+          set -e
+          tar -xzvf path/to/artifact/$VERSION.tar.gz
+          
+      - name: unpackage artifact from previous run
+        if: ${{ inputs.is_tag == true }}
+        run: |
+          set -e
+          tar -xzvf path/to/artifact/$GIT_TAG.tar.gz
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.aws_access_key_id }}
+          aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
+          aws-region: eu-west-2
+          
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+                  
+      - name: build docker file
+        run: |
+          set -e
+          docker build --build-arg otrl_service_name=${{ inputs.build_image }} --build-arg version=${version} -t ${{ inputs.build_image }} .
+          
+      - name: tag docker file
+        if: ${{ inputs.is_tag == false }}
+        run: |
+          set -e
+          docker tag ${{ inputs.build_image }} ${{ secrets.ecr_repo }}otrl/${{ inputs.build_image }}:$PULL_TAG
+          
+      - name: Push image to Amazon ECR
+        if: ${{ inputs.is_tag == false }}
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }} 
+        run: |
+          set -e
+          docker push ${{ secrets.ecr_repo }}otrl/${{ inputs.build_image }}:$PULL_TAG   
+          
+      - name: tag docker file
+        if: ${{ inputs.is_tag == true }}
+        run: |
+          set -e
+          docker tag ${{ inputs.build_image }} ${{ secrets.ecr_repo }}otrl/${{ inputs.build_image }}:$GIT_TAG
+          
+      - name: Push image to Amazon ECR
+        if: ${{ inputs.is_tag == true }}
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }} 
+        run: |
+          set -e
+          docker push ${{ secrets.ecr_repo }}otrl/${{ inputs.build_image }}:$GIT_TAG          
