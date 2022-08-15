@@ -1,8 +1,8 @@
 
-  
+
 name: build scala containers and publish them to aws ecr
 
-on: 
+on:
   workflow_call:
     inputs:
       java_version:
@@ -13,7 +13,7 @@ on:
         type: string
       repo_name:
         required: true
-        type: string 
+        type: string
     secrets:
       aws_access_key_id:
         required: true
@@ -25,7 +25,7 @@ on:
         required: false
       artifactory_pass:
         required: false
-  
+
 jobs:
   build:
     # The type of runner that the job will run on
@@ -36,30 +36,31 @@ jobs:
     steps:
       - name: checkout repo
         uses: actions/checkout@v3
-      
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
         with:
+          distribution: 'temurin'
           java-version: ${{ inputs.java_version }}
           cache: 'sbt'
-     
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.aws_access_key_id }}
           aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
           aws-region: eu-west-2
-          
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-     
+
       - name: build and test the image
         run: sbt ++${{ inputs.scala_version }} clean coverage test coverageOff docker:publishLocal
-      
-      - name: list images 
+
+      - name: list images
         run: docker image ls
-            
+
       - name: Push PR to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
