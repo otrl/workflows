@@ -55,7 +55,7 @@ jobs:
       - name: mess with environmentals
         run: |
           set -e
-          echo "DEBVERSION=$AVERSION-$RANDOM" >> $GITHUB_ENV  V
+          echo "DEBVERSION=$AVERSION-$RANDOM" >> $GITHUB_ENV
       
       - name : find the build file
         run: |
