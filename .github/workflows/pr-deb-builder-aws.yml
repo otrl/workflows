@@ -51,8 +51,13 @@ jobs:
       - name: set package version
         run: |
           set -e
-          echo "DEBVERSION=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
-
+          echo "AVERSION=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
+          
+      - name: mess with environmentals
+        run: |
+          set -e
+          echo "DEBVERSION=$AVERSION-$RANDOM" >> $GITHUB_ENV
+      
       - name : find the build file
         run: |
           ls
