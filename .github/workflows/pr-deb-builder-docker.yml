@@ -15,6 +15,10 @@ on:
       service_name:
         required: true
         type: string
+      skip_tests:
+        required: true
+        type: boolean
+        
     secrets:
       docker_username:
         required: true
@@ -64,12 +68,12 @@ jobs:
         run: |
           set -e
           echo "AVERSION=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
-          
+
       - name: mess with environmentals
         run: |
           set -e
           echo "DEBVERSION=$AVERSION-$RANDOM" >> $GITHUB_ENV          
-      
+
       - name : find the build file
         run: |
           ls
@@ -87,9 +91,17 @@ jobs:
         run: cat /home/runner/work/${{ inputs.service_name }}/${{ inputs.service_name }}/build.sbt
 
       - name: build and test the deb file
+        if: ${{ inputs.skip_tests == false }}
         run: |
           set -e
           sbt ++${{ inputs.scala_version }} test warn debian:packageBin
+          echo "Revised Package Version $DEBVERSION"
+
+      - name: build the deb file
+        if: ${{ inputs.skip_tests }}
+        run: |
+          set -e
+          sbt ++${{ inputs.scala_version }} warn debian:packageBin
           echo "Revised Package Version $DEBVERSION"
 
       - name: add the base image to the dockerfile
