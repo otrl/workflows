@@ -52,6 +52,13 @@ jobs:
           java-version: ${{ inputs.java_version }}
           cache: 'sbt'
 
+      - uses:
+        if: ${{ inputs.run_tests == false }}
+        run: sleep 60s
+        shell: bash
+
+      - uses: coursier/cache-action@v6
+
       - name: set package version
         run: |
           set -e
