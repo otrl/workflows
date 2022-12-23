@@ -29,7 +29,7 @@ on:
 jobs:
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-20.04-8core
+    runs-on: ubuntu-latest-8core
     env:
       ARTIFACTORY_USER: ${{ secrets.artifactory_user }}
       ARTIFACTORY_PASS: ${{ secrets.artifactory_pass }}
