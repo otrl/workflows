@@ -37,7 +37,8 @@ on:
 
 jobs:
   create-tag-and-release:
-    runs-on: ubuntu-20.04
+    # The type of runner that the job will run on
+    runs-on: ${{ inputs.runs_on }}
     env:
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
