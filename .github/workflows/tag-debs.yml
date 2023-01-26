@@ -15,6 +15,10 @@ on:
       service_name:
         required: true
         type: string
+      runs_on:
+        required: false
+        default: "ubuntu-20.04"
+        type: string
     secrets:
       docker_username:
         required: true
