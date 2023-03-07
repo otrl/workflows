@@ -1,0 +1,170 @@
+
+name: npm tag builder
+
+on:
+  workflow_call:
+    inputs:
+      node_version:
+        required: true
+        type: string
+      cache_directory:
+        required: true
+        type: string
+      command1:
+        required: true
+        type: string
+      command2:
+        required: false
+        type: string
+      repo_name:
+        required: true
+        type: string
+    secrets:
+      otrl_bot_key:
+        required: true
+      ssh_private_key:
+        required: false
+      aws_access_key_id:
+        required: true
+      aws_secret_access_key:
+        required: true
+      ecr_repo:
+        required: true
+      docker_password:
+        required: true
+      docker_username:
+        required: true
+
+
+jobs:
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        node-version: [ ${{ inputs.node_version }} ]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+          token: ${{ secrets.otrl_bot_key }}
+
+      - name: Get next tag
+        id: dry-run
+        uses: otrl/github-tag-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.otrl_bot_key}}
+          DEFAULT_BUMP: patch
+          VERBOSE: true
+          DRY_RUN: true
+
+      - name: Create release
+        uses: otrl/github-release-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}
+
+      - name: set docker tag
+        run: echo "GIT_TAG=${{ steps.dry-run.outputs.new_tag }}" >> $GITHUB_ENV
+
+      - name: set package version
+        run: |
+          set -e
+          jq --arg a "$GIT_TAG" '.version = $a' package.json > temp.package.file
+          mv temp.package.file package.json
+
+      - name: commit version bump back
+        run: |
+          set -e
+          git config --global user.name otrlbot
+          git config --global user.email "ops+otrlbot@ontrackretail.co.uk"
+          git commit -a -m 'version bump'
+          git push
+
+      - name: Bump version and push tag
+        uses: otrl/github-tag-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.otrl_bot_key }}
+          DEFAULT_BUMP: patch
+          VERBOSE: true
+
+      - name: Create release
+        uses: otrl/github-release-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.otrl_bot_key }}
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ${{ inputs.cache_directory }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - uses: webfactory/ssh-agent@v0.4.1
+        with:
+          ssh-private-key: ${{ secrets.ssh_private_key }}
+
+      - name: Install dependencies
+        run: |
+          set -e
+          npm install 
+
+      - name: pray
+        run: |
+          set -e
+          npm run build-ts
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.docker_username }}
+          password: ${{ secrets.docker_password }}
+
+      - name: build the docker file
+        run: |
+          set -e
+          docker build -t ${{ inputs.repo_name }} .
+
+      - name: list images
+        run: docker image ls
+
+      - name: Docker Push PR to docker cloud
+        run: |
+          set -e
+          PULL_TAG="pull-${{ github.event.number }}"          
+          docker tag ${{ inputs.repo_name }} ${{ inputs.repo_name }}:$GIT_TAG
+          docker push ${{ inputs.repo_name }}:$GIT_TAG
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.aws_access_key_id }}
+          aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
+          aws-region: eu-west-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: list images
+        run: docker image ls
+
+      - name: Push PR to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          set -e 
+          # Build a docker container and push it to ECR 
+          echo "Pushing image to ECR..."
+          docker tag ${{ inputs.repo_name }}:$GIT_TAG ${{ secrets.ecr_repo }}${{ inputs.repo_name }}:$GIT_TAG 
+          docker push ${{ secrets.ecr_repo }}${{ inputs.repo_name }}:$GIT_TAG
