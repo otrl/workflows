@@ -70,7 +70,7 @@ jobs:
         run: echo "GIT_TAG=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.aws_access_key_id }}
           aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
@@ -78,7 +78,7 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v1.6.0
 
       - name: tag and push to Amazon ECR
         env:
@@ -90,7 +90,7 @@ jobs:
           docker push ${{ secrets.ecr_repo }}${{ inputs.repo_name }}:$GIT_TAG
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.docker_username }}
           password: ${{ secrets.docker_password }}
