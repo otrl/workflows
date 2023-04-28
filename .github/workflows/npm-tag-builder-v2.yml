@@ -49,7 +49,7 @@ jobs:
 
       - name: Get next tag
         id: dry-run
-        uses: otrl/github-tag-action@master
+        uses: otrl/github-tag-action@v1.1
         env:
           GITHUB_TOKEN: ${{ secrets.otrl_bot_key}}
           DEFAULT_BUMP: patch
@@ -79,7 +79,7 @@ jobs:
           git push
 
       - name: Bump version and push tag
-        uses: otrl/github-tag-action@master
+        uses: otrl/github-tag-action@v1.1
         env:
           GITHUB_TOKEN: ${{ secrets.otrl_bot_key }}
           DEFAULT_BUMP: patch
@@ -108,7 +108,7 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - uses: webfactory/ssh-agent@v0.4.1
+      - uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.ssh_private_key }}
 
@@ -142,6 +142,7 @@ jobs:
           PULL_TAG="pull-${{ github.event.number }}"          
           docker tag ${{ inputs.repo_name }} ${{ inputs.repo_name }}:$GIT_TAG
           docker push ${{ inputs.repo_name }}:$GIT_TAG
+          
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
