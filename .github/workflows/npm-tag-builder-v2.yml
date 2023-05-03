@@ -56,6 +56,10 @@ jobs:
           VERBOSE: true
           DRY_RUN: true
 
+      - name: sample
+        id: sample 
+        run: echo "{TESTVARIABLE}={annoyingtext}" >> $GITHUB_OUTPUT
+    
       - name: Create release
         uses: otrl/github-release-action@master
         env:
@@ -66,8 +70,9 @@ jobs:
           GIT_TAG: ${{ steps.dry-run.outputs.new_tag }}
         run: |
               set -e
-              echo "$GIT_TAG"
-              echo "$new_tag"
+              echo "${{ steps.dry-run.outputs.new_tag }}"
+              echo "$TESTVARIABLE"
+              echo "${{ steps.sample.outputs.TESTVARIABLE }} test variable"
               echo "GIT_TAG=${{ steps.dry-run.outputs.new_tag }}" >> $GITHUB_ENV
               
       - name: set package version
