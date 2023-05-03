@@ -8,12 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      
       - name: Bump version and push tag
-        uses: otrl/github-tag-action@master
+        uses: otrl/github-tag-action@v1.2
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
           DEFAULT_BUMP: patch
           VERBOSE: true
+          
       - name: Create release
         uses: otrl/github-release-action@master
         env:
