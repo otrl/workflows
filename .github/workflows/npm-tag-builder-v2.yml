@@ -82,7 +82,7 @@ jobs:
           git push
 
       - name: Bump version and push tag
-        uses: otrl/github-tag-action@master
+        uses: otrl/github-tag-action@v1.3
         env:
           GITHUB_TOKEN: ${{ secrets.otrl_bot_key }}
           DEFAULT_BUMP: patch
