@@ -58,7 +58,7 @@ jobs:
 
       - name: sample
         id: sample 
-        run: echo "{TESTVARIABLE}={annoyingtext}" >> "$GITHUB_ENV"
+        run: echo "TESTVARIABLE=annoyingtext" >> "$GITHUB_ENV"
     
       - name: Create release
         uses: otrl/github-release-action@master
