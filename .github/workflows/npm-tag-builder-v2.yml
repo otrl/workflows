@@ -49,7 +49,7 @@ jobs:
 
       - name: Get next tag
         id: dry-run
-        uses: otrl/github-tag-action@v1.1
+        uses: otrl/github-tag-action@v1.2
         env:
           GITHUB_TOKEN: ${{ secrets.otrl_bot_key}}
           DEFAULT_BUMP: patch
@@ -79,7 +79,7 @@ jobs:
           git push
 
       - name: Bump version and push tag
-        uses: otrl/github-tag-action@v1.1
+        uses: otrl/github-tag-action@v1.2
         env:
           GITHUB_TOKEN: ${{ secrets.otrl_bot_key }}
           DEFAULT_BUMP: patch
