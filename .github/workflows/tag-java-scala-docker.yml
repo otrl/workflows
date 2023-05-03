@@ -31,7 +31,7 @@ on:
 
 jobs:
   create-tag-and-release:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     env:
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -44,7 +44,7 @@ jobs:
           fetch-depth: '0'
           
       - name: Bump version and push tag
-        uses: otrl/github-tag-action@v1.1
+        uses: otrl/github-tag-action@v1.2
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
           DEFAULT_BUMP: patch
