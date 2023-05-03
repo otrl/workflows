@@ -91,7 +91,7 @@ jobs:
           git push
 
       - name: Bump version and push tag
-        uses: otrl/github-tag-action@v1.2
+        uses: otrl/github-tag-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.otrl_bot_key }}
           DEFAULT_BUMP: patch
