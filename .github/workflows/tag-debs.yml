@@ -17,7 +17,7 @@ on:
         type: string
       runs_on:
         required: false
-        default: "ubuntu-20.04"
+        default: "ubuntu-22.04"
         type: string
     secrets:
       docker_username:
@@ -51,7 +51,7 @@ jobs:
           fetch-depth: '0'
           
       - name: Bump version and push tag
-        uses: otrl/github-tag-action@v1.1
+        uses: otrl/github-tag-action@v1.2
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
           DEFAULT_BUMP: patch
