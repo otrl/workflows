@@ -17,7 +17,7 @@ on:
         type: string
       runs_on:
         required: false
-        default: "ubuntu-20.04"
+        default: "ubuntu-22.04"
         type: string
     secrets:
       docker_username:
@@ -99,7 +99,7 @@ jobs:
       - name: add the base image to the dockerfile
         run: |
           set -e
-          sed -i "1s;^;FROM otrl/oraclejdk-8-base:jan2022v3;g" ./Dockerfile
+          sed -i "1s;^;FROM otrl/oraclejdk-8-base:may2023;g" ./Dockerfile
 
       - name: build the docker file
         run: |
