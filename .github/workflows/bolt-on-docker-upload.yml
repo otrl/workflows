@@ -32,7 +32,7 @@ jobs:
           echo "PULL_TAG=pull-${{ github.event.number }}" >> $GITHUB_ENV
           
       - name: get artifacts frome previous job
-        uses: actions/download-artifact@v3.1.3
+        uses: actions/download-artifact@v4.0.0
         with:
           name: ${{env.VERSION}}.tar.gz
           path: path/to/artifact
