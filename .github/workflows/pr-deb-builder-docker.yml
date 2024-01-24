@@ -96,11 +96,6 @@ jobs:
           sbt ++${{ inputs.scala_version }} test warn debian:packageBin
           echo "Revised Package Version $DEBVERSION"
 
-      - name: add the base image to the dockerfile
-        run: |
-          set -e
-          sed -i "1s;^;FROM otrl/eclipse-temurin-11-base:june2023;g" ./Dockerfile
-
       - name: build the docker file
         run: |
           set -e
