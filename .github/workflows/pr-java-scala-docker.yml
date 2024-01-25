@@ -12,6 +12,10 @@ on:
       repo_name:
         required: true
         type: string
+      runs_on:
+        required: false
+        default: "ubuntu-22.04"
+        type: string
     secrets:
       docker_username:
         required: true
@@ -26,7 +30,7 @@ on:
 jobs:
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-22.04
+    runs-on: ${{ inputs.runs_on }}
     env:
       ARTIFACTORY_USER: ${{ secrets.artifactory_user }}
       ARTIFACTORY_PASS: ${{ secrets.artifactory_pass }}
