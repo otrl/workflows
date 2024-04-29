@@ -15,7 +15,13 @@ on:
         type: string
       command2:
         required: false
-        type: string        
+        type: string      
+      command3:
+        required: false
+        type: string 
+      command4:
+        required: false
+        type: string         
       repo_name:
         required: true
         type: string         
@@ -88,7 +94,15 @@ jobs:
       - name: run npm command 2
         if: len(${{ inputs.command2 }})
         run: ${{ inputs.command2 }}
-          
+
+      - name: run npm command 3
+        if: len(${{ inputs.command3 }})
+        run: ${{ inputs.command3 }}
+
+      - name: run npm command 4
+        if: len(${{ inputs.command4 }})
+        run: ${{ inputs.command4 }}
+        
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
