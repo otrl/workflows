@@ -73,6 +73,14 @@ jobs:
       - name: run npm command 2
         if: len(${{ inputs.command2 }})
         run: ${{ inputs.command2 }}
+
+      - name: run npm command 3
+        if: len(${{ inputs.command2 }})
+        run: ${{ inputs.command2 }}
+
+      - name: run npm command 4
+        if: len(${{ inputs.command2 }})
+        run: ${{ inputs.command2 }}        
           
       - name: Login to Docker Hub
         uses: docker/login-action@v3
