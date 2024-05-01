@@ -69,7 +69,7 @@ jobs:
             ${{ runner.os }}-
           
           
-      - uses: webfactory/ssh-agent@v0.8.0
+      - uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.ssh_private_key }}          
 
