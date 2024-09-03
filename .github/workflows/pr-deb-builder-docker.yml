@@ -60,6 +60,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-sbt-
 
+      - name: Cache Coursier
+        id: cache-coursier
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/coursier
+          key: ${{ runner.os }}-coursier-${{ hashFiles('**/build.sbt') }}-${{ hashFiles('**/project/build.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-coursier-
+
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
