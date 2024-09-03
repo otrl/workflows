@@ -111,6 +111,14 @@ jobs:
           sbt ++${{ inputs.scala_version }} warn debian:packageBin
           echo "Revised Package Version $DEBVERSION"
 
+      - uses: actions/cache/save@v4
+        if: always() // or any other condition to invoke the save action
+        with:
+          path: |
+            ~/.ivy2/cache
+            ~/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
+
       - name: add the base image to the dockerfile
         if: ${{ inputs.add_base_image == true }}
         run: |
