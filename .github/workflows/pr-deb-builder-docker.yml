@@ -111,7 +111,8 @@ jobs:
           sbt ++${{ inputs.scala_version }} warn debian:packageBin
           echo "Revised Package Version $DEBVERSION"
 
-      - uses: actions/cache/save@v4
+      - name: Save cache
+        uses: actions/cache/save@v4
         if: always() // or any other condition to invoke the save action
         with:
           path: |
