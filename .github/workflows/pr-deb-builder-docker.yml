@@ -19,6 +19,10 @@ on:
         required: false
         default: "ubuntu-22.04"
         type: string
+      add_base_image:
+        required: false
+        default: true
+        type: boolean
     secrets:
       docker_username:
         required: true
@@ -108,6 +112,7 @@ jobs:
           echo "Revised Package Version $DEBVERSION"
 
       - name: add the base image to the dockerfile
+        if: ${{ inputs.add_base_image == true }}
         run: |
           set -e
           sed -i "1s;^;FROM otrl/eclipse-temurin-11-base:june2023;g" ./Dockerfile
