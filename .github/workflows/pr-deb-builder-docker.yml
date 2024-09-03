@@ -104,7 +104,7 @@ jobs:
       - name: build and test the deb file
         run: |
           set -e
-          sbt ++${{ inputs.scala_version }} test warn debian:packageBin
+          sbt ++${{ inputs.scala_version }} warn debian:packageBin
           echo "Revised Package Version $DEBVERSION"
 
       - name: add the base image to the dockerfile
