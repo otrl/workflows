@@ -25,12 +25,12 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: '0'
           
       - name: get artifacts frome previous job
-        uses: actions/download-artifact@v3.0.0
+        uses: actions/download-artifact@v4
         with:
           name: $VERSION.tar.gz
           path: path/to/artifact
@@ -64,7 +64,7 @@ jobs:
           tar -xzvf path/to/artifact/$GIT_TAG.tar.gz
       
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.aws_access_key_id }}
           aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
@@ -72,7 +72,7 @@ jobs:
           
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1.6.0
+        uses: aws-actions/amazon-ecr-login@v2
                   
       - name: build docker file
         run: |
