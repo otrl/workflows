@@ -95,13 +95,13 @@ jobs:
 #        id: login-ecr
 #        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: add the base image to the dockerfile
-        run: |
-          set -e
-          sed -i "1s;^;FROM 834579172960.dkr.ecr.eu-west-2.amazonaws.com/otrl/eclipse-temurin-11-base:june2023;g" ./Dockerfile
+#      - name: add the base image to the dockerfile
+#        run: |
+#          set -e
+#          sed -i "1s;^;FROM 834579172960.dkr.ecr.eu-west-2.amazonaws.com/otrl/eclipse-temurin-11-base:june2023;g" ./Dockerfile
 
-      - name: verify updated Dockerfile
-        run: cat Dockerfile
+#      - name: verify updated Dockerfile
+#        run: cat Dockerfile
 
       - name: build the docker image
         run: |
