@@ -127,16 +127,19 @@ jobs:
           ${{ inputs.command1 }}
 
       - name: Running command 2 - ${{ inputs.command2 }}
+        if: len(${{ inputs.command2 }})
         run: |
           set -e
           ${{ inputs.command2 }}
 
       - name: Running command 3 - ${{ inputs.command3 }}
+        if: len(${{ inputs.command3 }})
         run: |
           set -e
           ${{ inputs.command3 }}          
 
       - name: Running command 4 - ${{ inputs.command4 }}
+        if: len(${{ inputs.command4 }})
         run: |
           set -e
           ${{ inputs.command4 }}            
