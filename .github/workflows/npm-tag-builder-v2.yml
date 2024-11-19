@@ -16,6 +16,12 @@ on:
       command2:
         required: false
         type: string
+      command3:
+        required: false
+        type: string
+      command4:
+        required: false
+        type: string            
       repo_name:
         required: true
         type: string
@@ -124,6 +130,16 @@ jobs:
         run: |
           set -e
           ${{ inputs.command2 }}
+
+      - name: Running command 3 - ${{ inputs.command3 }}
+        run: |
+          set -e
+          ${{ inputs.command3 }}          
+
+      - name: Running command 4 - ${{ inputs.command4 }}
+        run: |
+          set -e
+          ${{ inputs.command4 }}            
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
