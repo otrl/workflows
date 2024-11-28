@@ -54,7 +54,7 @@ jobs:
       - name: build and test the image
         run: |
           set -e
-          sbt ++${{ inputs.scala_version }} clean coverage test coverageOff docker:publishLocal
+          sbt ++${{ inputs.scala_version }} clean test docker:publishLocal
 
       - name: list images
         run: docker image ls
