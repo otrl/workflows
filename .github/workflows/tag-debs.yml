@@ -64,6 +64,9 @@ jobs:
           java-version: ${{ inputs.java_version }}
           cache: 'sbt'
 
+      - name: Setup sbt launcher
+        uses: sbt/setup-sbt@v1
+        
       - name: set docker tag
         run: echo "GIT_TAG=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
 
@@ -84,45 +87,16 @@ jobs:
           sbt ++${{ inputs.scala_version }} test warn debian:packageBin
           echo "Revised Package Version $DEBVERSION"
 
-#      - name: Configure AWS credentials
-#        uses: aws-actions/configure-aws-credentials@v4
-#        with:
-#          aws-access-key-id: ${{ secrets.aws_access_key_id }}
-#          aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
-#          aws-region: eu-west-2
-
-#      - name: Login to Amazon ECR
-#        id: login-ecr
-#        uses: aws-actions/amazon-ecr-login@v2
-
-#      - name: add the base image to the dockerfile
-#        run: |
-#          set -e
-#          sed -i "1s;^;FROM 834579172960.dkr.ecr.eu-west-2.amazonaws.com/otrl/eclipse-temurin-11-base:june2023;g" ./Dockerfile
-
-#      - name: verify updated Dockerfile
-#        run: cat Dockerfile
-
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.docker_username }}
           password: ${{ secrets.docker_password }}
 
-
       - name: build the docker image
         run: |
           set -e
           docker build --build-arg version=$DEBVERSION -t ${{ inputs.repo_name }} .
-#
-#      - name: tag and push to Amazon ECR
-#        env:
-#          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-#        run: |
-#          set -e
-#          echo "Pushing image to ECR..."
-#          docker tag ${{ inputs.repo_name }} ${{ secrets.ecr_repo }}${{ inputs.repo_name }}:$GIT_TAG
-#          docker push ${{ secrets.ecr_repo }}${{ inputs.repo_name }}:$GIT_TAG
 
       - name: Docker Push tag to docker cloud
         run: |
