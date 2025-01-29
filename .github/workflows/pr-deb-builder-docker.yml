@@ -50,6 +50,9 @@ jobs:
           java-version: ${{ inputs.java_version }}
           cache: 'sbt'
 
+      - name: Setup sbt launcher
+        uses: sbt/setup-sbt@v1
+        
       - name: Cache SBT
         uses: actions/cache@v4
         with:
@@ -101,11 +104,6 @@ jobs:
           set -e
           sbt ++${{ inputs.scala_version }} test warn debian:packageBin
           echo "Revised Package Version $DEBVERSION"
-
-#      - name: add the base image to the dockerfile
-#        run: |
-#          set -e
-#          sed -i "1s;^;FROM otrl/eclipse-temurin-11-base:june2023;g" ./Dockerfile
 
       - name: build the docker file
         run: |
