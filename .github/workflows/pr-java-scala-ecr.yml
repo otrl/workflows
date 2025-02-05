@@ -44,6 +44,9 @@ jobs:
           java-version: ${{ inputs.java_version }}
           cache: 'sbt'
 
+      - name: Setup sbt launcher
+        uses: sbt/setup-sbt@v1
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:

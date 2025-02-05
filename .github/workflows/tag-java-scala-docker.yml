@@ -62,6 +62,9 @@ jobs:
           java-version: ${{ inputs.java_version }}
           cache: 'sbt'
 
+      - name: Setup sbt launcher
+        uses: sbt/setup-sbt@v1
+
       - name: build and test the image
         run: |
           set -e
