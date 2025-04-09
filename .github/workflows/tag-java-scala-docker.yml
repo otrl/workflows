@@ -49,6 +49,7 @@ jobs:
           fetch-depth: '0'
 
       - name: Bump version and push tag
+        if: ${{ github.ref_type != 'tag' }}
         uses: otrl/github-tag-action@v1.3
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
@@ -70,8 +71,13 @@ jobs:
           set -e
           sbt ++${{ inputs.scala_version }} clean test docker:publishLocal
 
-      - name: set docker tag
-        run: echo "GIT_TAG=`echo $(git tag --sort=committerdate | tail -1)`" >> "$GITHUB_ENV"
+      - name: Determine tag or version
+        run: |
+          if [[ "${{ github.ref_type }}" == 'tag' ]]; then
+            echo "GIT_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
+          else
+            echo "GIT_TAG=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
+          fi      
 
 #      - name: Configure AWS credentials
 #        uses: aws-actions/configure-aws-credentials@v4
@@ -109,6 +115,7 @@ jobs:
           docker push ${{ inputs.repo_name }}:$GIT_TAG
 
       - name: Create release
+        if: ${{ github.ref_type != 'tag' }}
         uses: otrl/github-release-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
