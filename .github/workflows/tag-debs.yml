@@ -51,6 +51,7 @@ jobs:
           fetch-depth: '0'
 
       - name: Bump version and push tag
+        if: ${{ github.ref_type != 'tag' }}
         uses: otrl/github-tag-action@v1.3
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
@@ -66,14 +67,20 @@ jobs:
 
       - name: Setup sbt launcher
         uses: sbt/setup-sbt@v1
-        
-      - name: set docker tag
-        run: echo "GIT_TAG=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
+
+      - name: Determine tag or version
+        id: determine-tag
+        run: |
+          if [[ "${{ github.ref_type }}" == 'tag' ]]; then
+            echo "GIT_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
+          else
+            echo "GIT_TAG=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
+          fi
 
       - name: set package version
         run: |
           set -e
-          echo "DEBVERSION=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
+          echo "DEBVERSION=$GIT_TAG" >> $GITHUB_ENV
 
       - name: edit the build file
         run: sed -i "s/LATEST/$DEBVERSION/g" /home/runner/work/${{ inputs.service_name }}/${{ inputs.service_name }}/build.sbt
@@ -105,6 +112,7 @@ jobs:
           docker push ${{ inputs.repo_name }}:$GIT_TAG
 
       - name: Create release
+        if: ${{ github.ref_type != 'tag' }}
         uses: otrl/github-release-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
