@@ -17,6 +17,10 @@ on:
         required: false
         default: "ubuntu-22.04"
         type: string
+      sbt_service_prefix:
+        required: false
+        default: ""
+        type: string
     secrets:
       docker_username:
         required: true
@@ -71,11 +75,18 @@ jobs:
         with:
           username: ${{ secrets.docker_username }}
           password: ${{ secrets.docker_password }}
-          
+
       - name: build and test the image
+        if: ${{ inputs.sbt_service_prefix == '' }}
         run: |
           set -e
           sbt ++${{ inputs.scala_version }} clean test docker:publishLocal
+
+      - name: build and test the image with sbt service prefix
+        if: ${{ inputs.sbt_service_prefix != '' }}
+        run: |
+          set -e
+          sbt ++${{ inputs.scala_version }} ${{ inputs.sbt_service_prefix }}/clean ${{ inputs.sbt_service_prefix }}/test ${{ inputs.sbt_service_prefix }}/docker:publishLocal
 
       - name: Determine tag or version
         run: |
@@ -116,7 +127,7 @@ jobs:
           docker push ${{ inputs.repo_name }}:$GIT_TAG
 
       - name: Create release
-        if: ${{ github.ref_type != 'tag' }}
+        if: ${{ github.ref_type != 'tag' && inputs.sbt_service_prefix == '' }}
         uses: otrl/github-release-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
