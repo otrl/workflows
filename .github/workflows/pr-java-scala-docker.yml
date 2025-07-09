@@ -16,6 +16,10 @@ on:
         required: false
         default: "ubuntu-22.04"
         type: string
+      sbt_service_prefix:
+        required: false
+        default: ""
+        type: string
     secrets:
       docker_username:
         required: true
