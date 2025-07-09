@@ -55,9 +55,16 @@ jobs:
           password: ${{ secrets.docker_password }}
 
       - name: build and test the image
+        if: ${{ inputs.sbt_service_prefix == '' }}
         run: |
           set -e
           sbt ++${{ inputs.scala_version }} clean test docker:publishLocal
+
+      - name: build and test the image with sbt service prefix
+        if: ${{ inputs.sbt_service_prefix != '' }}
+        run: |
+          set -e
+          sbt ++${{ inputs.scala_version }} ${{ inputs.sbt_service_prefix }}/clean ${{ inputs.sbt_service_prefix }}/test ${{ inputs.sbt_service_prefix }}/docker:publishLocal
 
       - name: list images
         run: docker image ls
