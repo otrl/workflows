@@ -14,7 +14,7 @@ on:
         type: string
       runs_on:
         required: false
-        default: "ubuntu-22.04"
+        default: "ubuntu-latest"
         type: string
     secrets:
       docker_username:
