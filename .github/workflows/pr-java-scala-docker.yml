@@ -16,6 +16,20 @@ on:
         required: false
         default: "ubuntu-latest"
         type: string
+
+      #####  Customisable build command
+      # Can be single or multi-line commands
+      # e.g.
+      # build_command: |
+      #   sbt ++${{ inputs.scala_version }} test fun:test
+      #   sbt ++${{ inputs.scala_version }} common/publish client/publish
+      #   sbt ++${{ inputs.scala_version }} --warn service/debian:packageBin
+      #   echo "Revised Package Version $DEBVERSION"
+      build_command:
+        required: false
+        type: string
+        default: |
+          sbt ++${{ inputs.scala_version }} clean test docker:publishLocal
     secrets:
       docker_username:
         required: true
@@ -57,7 +71,7 @@ jobs:
       - name: build and test the image
         run: |
           set -e
-          sbt ++${{ inputs.scala_version }} clean test docker:publishLocal
+          ${{ inputs.build_command }}
 
       - name: list images
         run: docker image ls
