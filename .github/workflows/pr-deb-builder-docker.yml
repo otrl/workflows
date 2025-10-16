@@ -27,12 +27,11 @@ on:
       #   sbt ++${{ inputs.scala_version }} test fun:test
       #   sbt ++${{ inputs.scala_version }} common/publish client/publish
       #   sbt ++${{ inputs.scala_version }} --warn service/debian:packageBin
-
-        build_command:
-          required: false
-          type: string
-          default: |
-            sbt ++${{ inputs.scala_version }} test warn debian:packageBin
+      build_command:
+        required: false
+        type: string
+        default: |
+          sbt ++${{ inputs.scala_version }} test warn debian:packageBin
     secrets:
       docker_username:
         required: true
