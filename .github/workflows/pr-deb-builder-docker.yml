@@ -20,16 +20,15 @@ on:
         default: "ubuntu-22.04"
         type: string
       build_command:
-        description: |
-          Customisable build command
-          Can be single or multi-line commands
-          
-           e.g.
-           build_command: |
-             sbt ++${{ inputs.scala_version }} test fun:test
-             sbt ++${{ inputs.scala_version }} common/publish client/publish
-             sbt ++${{ inputs.scala_version }} --warn service/debian:packageBin
-
+        description: Customisable build command
+        ###
+        # Can be single or multi-line commands
+        #
+        # e.g.
+        # build_command: |
+        #  sbt ++${{ inputs.scala_version }} test fun:test
+        #  sbt ++${{ inputs.scala_version }} common/publish client/publish
+        #  sbt ++${{ inputs.scala_version }} --warn service/debian:packageBin
         required: false
         type: string
         default: |
@@ -39,7 +38,6 @@ on:
         required: false
         type: string
         default: "."
-
     secrets:
       docker_username:
         required: true
