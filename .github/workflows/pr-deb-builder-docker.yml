@@ -127,8 +127,8 @@ jobs:
       - name: build the docker file
         run: |
           set -e
-          ls -l target/*.deb
-          ls -l  ${{ inputs.docker_build_module }}/target/*.deb
+          ls -l /home/runner/work/${{ inputs.service_name }}/${{ inputs.service_name }}/target/*.deb
+          ls -l  /home/runner/work/${{ inputs.service_name }}/${{ inputs.service_name }}/${{ inputs.docker_build_module }}/target/*.deb
           docker build --build-arg version=$DEBVERSION -t ${{ inputs.repo_name }} ${{ inputs.docker_build_module }}
 
       - name: list images
