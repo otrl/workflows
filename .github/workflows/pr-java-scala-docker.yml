@@ -18,14 +18,11 @@ on:
         type: string
       build_command:
         description: Customisable build command without "sbt ++[version]" prefix
-          ###
-          # Can be single or multi-line commands
-          #
-          # e.g.
-          # build_command: |
-          #  test fun:test
-          #  common/publish client/publish
-          #  --warn service/debian:packageBin
+        ###
+        # e.g.
+        #  test fun:test
+        #  common/publish client/publish
+        #  --warn service/docker:publishLocal
         required: false
         type: string
         default: "clean test docker:publishLocal"

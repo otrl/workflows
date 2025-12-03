@@ -22,10 +22,7 @@ on:
       build_command:
         description: Customisable build command without "sbt ++[version]" prefix
         ###
-        # Can be single or multi-line commands
-        #
         # e.g.
-        # build_command: |
         #  test fun:test
         #  common/publish client/publish
         #  --warn service/debian:packageBin

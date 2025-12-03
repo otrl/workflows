@@ -19,17 +19,13 @@ on:
         required: false
         default: "ubuntu-22.04"
         type: string
-
       build_command:
         description: Customisable build command without "sbt ++[version]" prefix
-          ###
-          # Can be single or multi-line commands
-          #
-          # e.g.
-          # build_command: |
-          #  test fun:test
-          #  common/publish client/publish
-          #  --warn service/debian:packageBin
+        ###
+        # e.g.
+        #  test fun:test
+        #  common/publish client/publish
+        #  --warn service/debian:packageBin
         required: false
         type: string
         default: "test --warn debian:packageBin"
