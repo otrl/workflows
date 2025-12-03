@@ -24,7 +24,7 @@ on:
         # e.g.
         #  test fun:test
         #  common/publish client/publish
-        #  --warn service/docker:publishLocal
+        #  warn service/docker:publishLocal
         required: false
         type: string
         default: "clean test docker:publishLocal"
