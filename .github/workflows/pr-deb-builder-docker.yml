@@ -122,7 +122,7 @@ jobs:
 
       - name: build the docker file
         run: |
-          set -e          
+          set -e
           docker build --build-arg version=$DEBVERSION -t ${{ inputs.repo_name }} ${{ inputs.docker_build_module }}
 
       - name: list images
