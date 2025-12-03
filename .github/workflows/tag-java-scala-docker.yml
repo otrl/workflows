@@ -17,6 +17,27 @@ on:
         required: false
         default: "ubuntu-22.04"
         type: string
+
+      build_command:
+        description: Customisable build command without "sbt ++[version]" prefix
+          ###
+          # Can be single or multi-line commands
+          #
+          # e.g.
+          # build_command: |
+          #  test fun:test
+          #  common/publish client/publish
+          #  --warn service/debian:packageBin
+        required: false
+        type: string
+        default: |
+          clean test docker:publishLocal
+
+      docker_build_module:
+        description: Customisable docker build module path
+        required: false
+        type: string
+        default: "."
     secrets:
       docker_username:
         required: true
@@ -71,11 +92,11 @@ jobs:
         with:
           username: ${{ secrets.docker_username }}
           password: ${{ secrets.docker_password }}
-          
+
       - name: build and test the image
         run: |
           set -e
-          sbt ++${{ inputs.scala_version }} clean test docker:publishLocal
+          sbt ++${{ inputs.scala_version }} ${{ inputs.build_command }}
 
       - name: Determine tag or version
         run: |
