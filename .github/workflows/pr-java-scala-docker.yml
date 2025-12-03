@@ -28,8 +28,7 @@ on:
           #  --warn service/debian:packageBin
         required: false
         type: string
-        default: |
-          clean test docker:publishLocal
+        default: "clean test docker:publishLocal"
     secrets:
       docker_username:
         required: true

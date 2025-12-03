@@ -32,8 +32,7 @@ on:
           #  --warn service/debian:packageBin
         required: false
         type: string
-        default: |
-          test warn debian:packageBin
+        default: "test --warn debian:packageBin"
 
       docker_build_module:
         description: Customisable docker build module path

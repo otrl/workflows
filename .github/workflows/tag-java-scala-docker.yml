@@ -30,9 +30,7 @@ on:
           #  --warn service/debian:packageBin
         required: false
         type: string
-        default: |
-          clean test docker:publishLocal
-
+        default: "clean test docker:publishLocal"
       docker_build_module:
         description: Customisable docker build module path
         required: false
