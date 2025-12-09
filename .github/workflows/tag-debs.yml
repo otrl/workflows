@@ -19,6 +19,22 @@ on:
         required: false
         default: "ubuntu-22.04"
         type: string
+      build_command:
+        description: Customisable build command without "sbt ++[version]" prefix
+        ###
+        # e.g.
+        #  test fun:test
+        #  common/publish client/publish
+        #  warn service/debian:packageBin
+        required: false
+        type: string
+        default: "test warn debian:packageBin"
+
+      docker_build_module:
+        description: Customisable docker build module path
+        required: false
+        type: string
+        default: "."
     secrets:
       docker_username:
         required: true
@@ -52,7 +68,7 @@ jobs:
 
       - name: Bump version and push tag
         if: ${{ github.ref_type != 'tag' }}
-        uses: otrl/github-tag-action@v1.3
+        uses: otrl/github-tag-action@v1.4
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
           DEFAULT_BUMP: patch
@@ -91,7 +107,7 @@ jobs:
       - name: build and test the deb file
         run: |
           set -e
-          sbt ++${{ inputs.scala_version }} test warn debian:packageBin
+          sbt ++${{ inputs.scala_version }} ${{ inputs.build_command }}
           echo "Revised Package Version $DEBVERSION"
 
       - name: Login to Docker Hub
@@ -103,7 +119,7 @@ jobs:
       - name: build the docker image
         run: |
           set -e
-          docker build --build-arg version=$DEBVERSION -t ${{ inputs.repo_name }} .
+          docker build --build-arg version=$DEBVERSION -t ${{ inputs.repo_name }} ${{ inputs.docker_build_module }}
 
       - name: Docker Push tag to docker cloud
         run: |

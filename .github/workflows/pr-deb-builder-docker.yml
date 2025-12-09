@@ -19,6 +19,21 @@ on:
         required: false
         default: "ubuntu-22.04"
         type: string
+      build_command:
+        description: Customisable build command without "sbt ++[version]" prefix
+        ###
+        # e.g.
+        #  test fun:test
+        #  common/publish client/publish
+        #  warn service/debian:packageBin
+        required: false
+        type: string
+        default: "test warn debian:packageBin"
+      docker_build_module:
+        description: Customisable docker build module path
+        required: false
+        type: string
+        default: "."
     secrets:
       docker_username:
         required: true
@@ -101,14 +116,14 @@ jobs:
 
       - name: build and test the deb file
         run: |
-          set -e
-          sbt ++${{ inputs.scala_version }} test warn debian:packageBin
+          set -e          
+          sbt ++${{ inputs.scala_version }} ${{ inputs.build_command }}
           echo "Revised Package Version $DEBVERSION"
 
       - name: build the docker file
         run: |
           set -e
-          docker build --build-arg version=$DEBVERSION -t ${{ inputs.repo_name }} .
+          docker build --build-arg version=$DEBVERSION -t ${{ inputs.repo_name }} ${{ inputs.docker_build_module }}
 
       - name: list images
         run: docker image ls

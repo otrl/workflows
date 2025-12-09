@@ -16,6 +16,16 @@ on:
         required: false
         default: "ubuntu-latest"
         type: string
+      build_command:
+        description: Customisable build command without "sbt ++[version]" prefix
+        ###
+        # e.g.
+        #  test fun:test
+        #  common/publish client/publish
+        #  warn service/docker:publishLocal
+        required: false
+        type: string
+        default: "clean test docker:publishLocal"
     secrets:
       docker_username:
         required: true
@@ -57,7 +67,7 @@ jobs:
       - name: build and test the image
         run: |
           set -e
-          sbt ++${{ inputs.scala_version }} clean test docker:publishLocal
+          sbt ++${{ inputs.scala_version }} ${{ inputs.build_command }}
 
       - name: list images
         run: docker image ls
