@@ -65,7 +65,7 @@ jobs:
 
       - name: Bump version and push tag
         if: ${{ github.ref_type != 'tag' }}
-        uses: otrl/github-tag-action@v1.4
+        uses: otrl/github-tag-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
           DEFAULT_BUMP: patch
