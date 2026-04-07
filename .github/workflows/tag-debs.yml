@@ -68,7 +68,7 @@ jobs:
 
       - name: Bump version and push tag
         if: ${{ github.ref_type != 'tag' }}
-        uses: otrl/github-tag-action@v1.4
+        uses: otrl/github-tag-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
           DEFAULT_BUMP: patch
@@ -82,7 +82,7 @@ jobs:
           cache: 'sbt'
 
       - name: Setup sbt launcher
-        uses: sbt/setup-sbt@v1.1.12
+        uses: sbt/setup-sbt@v1
 
       - name: Determine tag or version
         id: determine-tag
