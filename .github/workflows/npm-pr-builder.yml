@@ -77,17 +77,17 @@ jobs:
         run: ${{ inputs.command1 }}
 
       - name: run npm command 2
-        if: len(${{ inputs.command2 }})
+        if: ${{ inputs.command2 != '' }}
         run: ${{ inputs.command2 }}
 
       - name: Running command 3 - ${{ inputs.command3 }}
-        if: len(${{ inputs.command3 }})
+        if: ${{ inputs.command3 != '' }}
         run: |
           set -e
           ${{ inputs.command3 }}          
 
       - name: Running command 4 - ${{ inputs.command4 }}
-        if: len(${{ inputs.command4 }})
+        if: ${{ inputs.command4 != '' }}
         run: |
           set -e
           ${{ inputs.command4 }}          
