@@ -72,9 +72,15 @@ jobs:
         uses: actions/cache@v5
         with:
           path: |
-            ~/.ivy2/cache
+            ~/.ivy2/cache                                                                                                                                                                                                                                                                                          
             ~/.sbt
-          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
+            ~/.cache/coursier                                                                                                                                                                                                                                                                                      
+            target              
+            project/target                                                                                                                                                                                                                                                                                         
+            project/project/target
+          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt', 'project/**/*.sbt', 'project/build.properties') }}
+          restore-keys: |                                                                                                                                                                                                                                                                                          
+            ${{ runner.os }}-sbt-
 
       - name: Login to Docker Hub
         uses: docker/login-action@v4
