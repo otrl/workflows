@@ -9,6 +9,10 @@ on:
       build_image:
         required: true
         type: string
+      tag_name:
+        required: false
+        type: string
+        default: ''
     secrets:
       docker_username:
         required: true
@@ -39,7 +43,12 @@ jobs:
           echo "VERSION=`jq -r '.version' package.json`" >> $GITHUB_ENV
           echo "PULL_TAG=pull-${{ github.event.number }}" >> $GITHUB_ENV
 
+      - name: set docker tag from explicit tag input
+        if: ${{ inputs.is_tag == true && inputs.tag_name != '' }}
+        run: echo "GIT_TAG=${{ inputs.tag_name }}" >> $GITHUB_ENV
+
       - name: set docker tag
+        if: ${{ inputs.is_tag == true && inputs.tag_name == '' }}
         run: echo "GIT_TAG=`echo $(git tag --sort=committerdate | tail -1)`" >> $GITHUB_ENV
 
       - name: check version is set correctly
